@@ -1,5 +1,6 @@
 package com.example.core.config;
 
+import com.example.core.config.annotation.ObjectPostProcessor;
 import com.example.core.config.annotation.SecurityConfigurer;
 import com.example.core.web.builders.WebSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,11 @@ public class WebSecurityConfiguration {
     private WebSecurity webSecurity;
 
     @Autowired
-    public void setFilterChainProxySecurityConfigurer(
+    public void setFilterChainProxySecurityConfigurer(ObjectPostProcessor<Object> objectPostProcessor,
             @Value("#{@autowiredWebSecurityConfigurersIgnoreParents.getWebSecurityConfigurers()}") List<SecurityConfigurer<Filter, WebSecurity>> webSecurityConfigurers)
             throws Exception{
         System.out.println("webSecurityConfigurers的大小："+webSecurityConfigurers.size());
-        webSecurity = new WebSecurity();
+        webSecurity = objectPostProcessor.postProcess(new WebSecurity(objectPostProcessor));
         for(SecurityConfigurer<Filter, WebSecurity> webSecurityConfigurer : webSecurityConfigurers){
             webSecurity.apply(webSecurityConfigurer);
         }

@@ -12,6 +12,27 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
 
     private final LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, List<SecurityConfigurer<O, B>>> configurers = new LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, List<SecurityConfigurer<O, B>>>();
 
+    private ObjectPostProcessor<Object> objectPostProcessor;
+
+    private final boolean allowConfigurersOfSameType;
+
+    protected AbstractConfiguredSecurityBuilder(
+            ObjectPostProcessor<Object> objectPostProcessor) {
+        this(objectPostProcessor, false);
+    }
+
+    /**
+     * 使用ObjectPostProcessor创建一个实例
+     * @param objectPostProcessor
+     * @param allowConfigurersOfSameType  如果为true，将不要覆盖其他SecurityConfigurer执行apply
+     */
+    protected AbstractConfiguredSecurityBuilder(
+            ObjectPostProcessor<Object> objectPostProcessor,
+            boolean allowConfigurersOfSameType) {
+        Assert.notNull(objectPostProcessor, "objectPostProcessor cannot be null");
+        this.objectPostProcessor = objectPostProcessor;
+        this.allowConfigurersOfSameType = allowConfigurersOfSameType;
+    }
 
     public <C extends SecurityConfigurer<O, B>> C apply(C configurer) throws Exception{
         add(configurer);
@@ -35,6 +56,11 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
 
     private BuildState buildState = BuildState.UNBUILT;
 
+    /**
+     * 定义构建的模版
+     * @return
+     * @throws Exception
+     */
     @Override
     protected O doBuild() throws Exception {
         synchronized (configurers) {
@@ -43,7 +69,11 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
             beforeInit();
             init();
 
-            return null;
+            buildState = BuildState.BUILDING;
+            O result = performBuild();
+
+
+            return result;
         }
 
 
@@ -63,6 +93,8 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
 //            configurer.init((B) this);
 //        }
     }
+
+    protected abstract O performBuild() throws Exception;
 
     private Collection<SecurityConfigurer<O, B>> getConfigurers() {
         List<SecurityConfigurer<O, B>> result = new ArrayList<SecurityConfigurer<O, B>>();

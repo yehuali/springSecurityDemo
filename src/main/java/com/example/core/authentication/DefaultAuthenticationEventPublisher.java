@@ -4,6 +4,7 @@ import com.example.core.authentication.evnt.AbstractAuthenticationEvent;
 import com.example.core.authentication.evnt.AbstractAuthenticationFailureEvent;
 import com.example.core.authentication.evnt.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.HashMap;
  * 3.异常映射系统可以设置additionalExceptionMappings为properties调整
  *    --->键表示异常，值表示事件(AbstractAuthenticationFailureEvent的子类) ，并提供构造函数
  */
-public class DefaultAuthenticationEventPublisher implements AuthenticationEventPublisher,ApplicationEventPublisherAware {
+public class DefaultAuthenticationEventPublisher implements AuthenticationEventPublisher, ApplicationEventPublisherAware {
 
     private ApplicationEventPublisher applicationEventPublisher;
 
@@ -39,6 +40,15 @@ public class DefaultAuthenticationEventPublisher implements AuthenticationEventP
     private void addMapping(String exceptionClass,
                             Class<? extends AbstractAuthenticationFailureEvent> eventClass) {
 
+        try {
+            Constructor<? extends AbstractAuthenticationEvent> constructor = eventClass
+                    .getConstructor(Authentication.class, AuthenticationException.class);
+            exceptionMappings.put(exceptionClass, constructor);
+        }
+        catch (NoSuchMethodException e) {
+            throw new RuntimeException("Authentication event class "
+                    + eventClass.getName() + " has no suitable constructor");
+        }
     }
 
     @Override
