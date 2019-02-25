@@ -32,6 +32,10 @@
          + DefaultSecurityFilterChain实现SecurityFilterChain
      + 在构建的时候通过模板方法configure(B builder)，会将之前添加的configure进行遍历配置configure(H http)--->添加过滤器
      + FilterChainProxy会根据url匹配SecurityFilterChain过滤器链
+     
+## 参考资料
+  + 徐靖峰springSecurity系列：https://www.cnkirito.moe/spring-security-2/
+     
       
        
                          

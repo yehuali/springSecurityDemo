@@ -3,14 +3,13 @@ package com.example.core.config.annotation;
 
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBuilder<O>> extends AbstractSecurityBuilder<O> {
 
     private final LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, List<SecurityConfigurer<O, B>>> configurers = new LinkedHashMap<Class<? extends SecurityConfigurer<O, B>>, List<SecurityConfigurer<O, B>>>();
+
+    private final Map<Class<? extends Object>, Object> sharedObjects = new HashMap<Class<? extends Object>, Object>();
 
     private ObjectPostProcessor<Object> objectPostProcessor;
 
@@ -34,7 +33,20 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
         this.allowConfigurersOfSameType = allowConfigurersOfSameType;
     }
 
-    public <C extends SecurityConfigurer<O, B>> C apply(C configurer) throws Exception{
+    public <C extends SecurityConfigurer<O, B>> C getConfigurer(Class<C> clazz) {
+        List<SecurityConfigurer<O, B>> configs = this.configurers.get(clazz);
+        if (configs == null) {
+            return null;
+        }
+        if (configs.size() != 1) {
+            throw new IllegalStateException("Only one configurer expected for type "
+                    + clazz + ", but got " + configs);
+        }
+        return (C) configs.get(0);
+    }
+
+    public <C extends SecurityConfigurerAdapter<O, B>> C apply(C configurer) throws Exception{
+        configurer.setBuilder((B) this);
         add(configurer);
         return configurer;
     }
@@ -55,6 +67,14 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
     }
 
     private BuildState buildState = BuildState.UNBUILT;
+
+    public <C> C getSharedObject(Class<C> sharedType) {
+        return (C) this.sharedObjects.get(sharedType);
+    }
+
+    public <C> void setSharedObject(Class<C> sharedType, C object) {
+        this.sharedObjects.put(sharedType, object);
+    }
 
     /**
      * 定义构建的模版

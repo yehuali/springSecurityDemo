@@ -60,7 +60,11 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
         http = new HttpSecurity(objectPostProcessor,authenticationBuilder,sharedObjects);
         if (!disableDefaults) {
-            http.addFilter(new WebAsyncManagerIntegrationFilter());
+            http
+                .addFilter(new WebAsyncManagerIntegrationFilter())
+                .sessionManagement().and()
+                .securityContext()
+                ;
         }
         configure(http);
         return http;
@@ -92,6 +96,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     public void setApplicationContext(ApplicationContext context) {
         this.context = context;
     }
+
 
     private Map<Class<? extends Object>, Object> createSharedObjects() {
         Map<Class<? extends Object>, Object> sharedObjects = new HashMap<Class<? extends Object>, Object>();
@@ -155,6 +160,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         this.disableLocalConfigureAuthenticationBldr = true;
     }
+
 
     protected void configure(HttpSecurity http){
 
