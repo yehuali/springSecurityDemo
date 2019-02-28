@@ -10,7 +10,9 @@ import com.example.core.util.matcher.AnyRequestMatcher;
 import com.example.core.util.matcher.RequestMatcher;
 import com.example.core.web.DefaultSecurityFilterChain;
 import com.example.core.web.HttpSecurityBuilder;
+import com.example.core.web.config.ExpressionUrlAuthorizationConfigurer;
 import com.example.core.web.config.SecurityContextConfigurer;
+import org.springframework.context.ApplicationContext;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
@@ -33,15 +35,42 @@ public class HttpSecurity extends AbstractConfiguredSecurityBuilder<DefaultSecur
                         AuthenticationManagerBuilder authenticationBuilder,
                         Map<Class<? extends Object>, Object> sharedObjects) {
         super(objectPostProcessor);
-
+        for (Map.Entry<Class<? extends Object>, Object> entry : sharedObjects
+                .entrySet()) {
+            setSharedObject((Class<Object>) entry.getKey(), entry.getValue());
+        }
     }
 
 
 
     @Override
     protected DefaultSecurityFilterChain performBuild() throws Exception {
+        //对过滤器链中的过滤器进行排序
         Collections.sort(filters, comparator);
         return new DefaultSecurityFilterChain(requestMatcher, filters);
+    }
+
+
+    public HttpSecurity requestMatcher(RequestMatcher requestMatcher) {
+        this.requestMatcher = requestMatcher;
+        return this;
+    }
+
+    /**
+     * 允许限制访问基于{@link HttpServletRequest}使用
+     * 可看springSecurity源码的示例配置代码
+     * @return
+     * @throws Exception
+     */
+    public ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry authorizeRequests()
+            throws Exception {
+        ApplicationContext context = getContext();
+        return getOrApply(new ExpressionUrlAuthorizationConfigurer<HttpSecurity>(context))
+                .getRegistry();
+    }
+
+    private ApplicationContext getContext() {
+        return getSharedObject(ApplicationContext.class);
     }
 
     public SessionManagementConfigurer<HttpSecurity> sessionManagement() throws Exception {

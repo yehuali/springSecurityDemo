@@ -6,6 +6,7 @@ import com.example.core.config.annotation.ObjectPostProcessor;
 import com.example.core.config.annotation.SecurityBuilder;
 import com.example.core.filter.FilterChainProxy;
 import com.example.core.web.SecurityFilterChain;
+import com.example.core.web.access.intercept.FilterSecurityInterceptor;
 
 import javax.servlet.Filter;
 import java.util.ArrayList;
@@ -17,9 +18,29 @@ public class WebSecurity extends AbstractConfiguredSecurityBuilder<Filter, WebSe
 
     private final List<SecurityBuilder<? extends SecurityFilterChain>> securityFilterChainBuilders = new ArrayList<SecurityBuilder<? extends SecurityFilterChain>>();
 
+    private FilterSecurityInterceptor filterSecurityInterceptor;
+
+    private Runnable postBuildAction = new Runnable() {
+        public void run() {
+        }
+    };
+
     public WebSecurity(ObjectPostProcessor<Object> objectPostProcessor) {
         super(objectPostProcessor);
         System.out.println("初始化WebSecurity");
+    }
+
+    public WebSecurity securityInterceptor(FilterSecurityInterceptor securityInterceptor) {
+        this.filterSecurityInterceptor = securityInterceptor;
+        return this;
+    }
+
+    /**
+     * 在生成之后立即执行Runnable
+     */
+    public WebSecurity postBuildAction(Runnable postBuildAction) {
+        this.postBuildAction = postBuildAction;
+        return this;
     }
 
     @Override
@@ -33,26 +54,9 @@ public class WebSecurity extends AbstractConfiguredSecurityBuilder<Filter, WebSe
         FilterChainProxy filterChainProxy = new FilterChainProxy(securityFilterChains);
 
         Filter result = filterChainProxy;
+        postBuildAction.run();
         return result;
     }
-
-
-//    @Override
-////    public Filter build() throws Exception {
-////        init();
-////
-////        int chainSize = securityFilterChainBuilders.size();
-////        List<HttpSecurity> securityFilterChains = new ArrayList<HttpSecurity>(
-////                chainSize);
-//////        for(){
-//////
-//////        }
-//
-////        //创建FilterChainProxy 对象
-////        FilterChainProxy filterChainProxy = new FilterChainProxy(securityFilterChains);
-////        return filterChainProxy;
-////    }
-
 
 
     public WebSecurity addSecurityFilterChainBuilder(

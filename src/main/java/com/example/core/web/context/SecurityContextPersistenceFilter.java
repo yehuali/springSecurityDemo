@@ -10,6 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ *1.职责:请求来临时，创建SecurityContext安全上下文信息
+ *            请求结束时，清空SecurityContextHolder
+ * 2.虽然安全上下文信息被存储于Session中，但我们在实际使用中不应该直接操作Session，
+ *     而应当使用SecurityContextHolder
+ */
 public class SecurityContextPersistenceFilter extends GenericFilterBean{
 
     static final String FILTER_APPLIED = "__spring_security_scpf_applied";
@@ -23,6 +29,7 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean{
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+        System.out.println("SecurityContextPersistenceFilter过滤器过滤");
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
 
@@ -36,15 +43,16 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean{
 
         HttpRequestResponseHolder holder = new HttpRequestResponseHolder(request,
                 response);
-        SecurityContext contextBeforeChainExecution = repo.loadContext(holder);
+//        SecurityContext contextBeforeChainExecution = repo.loadContext(holder);
 
         try {
-            SecurityContextHolder.setContext(contextBeforeChainExecution);
+//            SecurityContextHolder.setContext(contextBeforeChainExecution);
 
+            //调用过滤链的下一个过滤器
             chain.doFilter(holder.getRequest(), holder.getResponse());
 
-        }finally{
-
+        }finally{//整个过滤器链走完最后清空
+            request.removeAttribute(FILTER_APPLIED);
         }
 
     }

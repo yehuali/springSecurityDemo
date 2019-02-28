@@ -25,5 +25,6 @@ public final class SecurityContextConfigurer<H extends HttpSecurityBuilder<H>> e
         SecurityContextPersistenceFilter securityContextFilter = new SecurityContextPersistenceFilter(
                 securityContextRepository);
 
+        http.addFilter(securityContextFilter);
     }
 }

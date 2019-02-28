@@ -8,5 +8,9 @@ import com.example.core.web.context.SecurityContext;
  */
 public interface SecurityContextHolderStrategy {
 
+    void clearContext();
+
+    SecurityContext getContext();
+
     void setContext(SecurityContext context);
 }

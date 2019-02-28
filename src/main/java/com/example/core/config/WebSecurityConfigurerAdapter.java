@@ -5,6 +5,7 @@ import com.example.core.authentication.AuthenticationManagerBuilder;
 import com.example.core.authentication.DefaultAuthenticationEventPublisher;
 import com.example.core.authentication.config.AuthenticationConfiguration;
 import com.example.core.config.annotation.ObjectPostProcessor;
+import com.example.core.web.access.intercept.FilterSecurityInterceptor;
 import com.example.core.web.builders.HttpSecurity;
 import com.example.core.web.builders.WebSecurity;
 import com.example.core.web.config.WebSecurityConfigurer;
@@ -42,7 +43,13 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         //获取http实例
         final HttpSecurity http = getHttp();
         //添加过滤器链
-        web.addSecurityFilterChainBuilder(http);
+        web.addSecurityFilterChainBuilder(http).postBuildAction(new Runnable() {
+            public void run() {
+                FilterSecurityInterceptor securityInterceptor = http
+                        .getSharedObject(FilterSecurityInterceptor.class);
+                web.securityInterceptor(securityInterceptor);
+            }
+        });
     }
 
 
@@ -69,6 +76,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         configure(http);
         return http;
     }
+
 
 
     @Autowired
@@ -162,7 +170,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     }
 
 
-    protected void configure(HttpSecurity http){
+    protected void configure(HttpSecurity http) throws Exception{
 
     }
 

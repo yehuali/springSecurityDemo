@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 
 import javax.servlet.Filter;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
 public class WebSecurityConfiguration {
+
     private WebSecurity webSecurity;
 
     @Autowired
@@ -22,6 +25,9 @@ public class WebSecurityConfiguration {
             throws Exception{
         System.out.println("webSecurityConfigurers的大小："+webSecurityConfigurers.size());
         webSecurity = objectPostProcessor.postProcess(new WebSecurity(objectPostProcessor));
+
+        Collections.sort(webSecurityConfigurers, AnnotationAwareOrderComparator.INSTANCE);
+
         for(SecurityConfigurer<Filter, WebSecurity> webSecurityConfigurer : webSecurityConfigurers){
             webSecurity.apply(webSecurityConfigurer);
         }

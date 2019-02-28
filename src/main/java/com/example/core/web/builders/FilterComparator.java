@@ -1,5 +1,9 @@
 package com.example.core.web.builders;
 
+import com.example.core.web.access.intercept.FilterSecurityInterceptor;
+import com.example.core.web.context.SecurityContextPersistenceFilter;
+import com.example.core.web.context.request.async.WebAsyncManagerIntegrationFilter;
+
 import javax.servlet.Filter;
 import java.io.Serializable;
 import java.util.Comparator;
@@ -16,8 +20,11 @@ final class FilterComparator implements Comparator<Filter>, Serializable {
 
     FilterComparator() {
         int order = 100;
-//        put(ChannelProcessingFilter.class, order);
-//        order += STEP;
+        put(WebAsyncManagerIntegrationFilter.class, order);
+        order += STEP;
+        put(SecurityContextPersistenceFilter.class, order);
+        order += STEP;
+        put(FilterSecurityInterceptor.class, order);
     }
 
     private void put(Class<? extends Filter> filter, int position) {

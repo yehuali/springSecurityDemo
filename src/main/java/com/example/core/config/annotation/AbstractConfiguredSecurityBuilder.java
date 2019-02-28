@@ -51,6 +51,11 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
         return configurer;
     }
 
+    public <C extends SecurityConfigurer<O, B>> C apply(C configurer) throws Exception {
+        add(configurer);
+        return configurer;
+    }
+
     private <C extends SecurityConfigurer<O, B>> void add(C configurer) throws Exception {
         Assert.notNull(configurer, "configurer cannot be null");
 
@@ -89,6 +94,9 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
             beforeInit();
             init();
 
+            buildState = BuildState.CONFIGURING;
+            configure();
+
             buildState = BuildState.BUILDING;
             O result = performBuild();
 
@@ -112,6 +120,14 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
 //        for (SecurityConfigurer<O, B> configurer : configurersAddedInInitializing) {
 //            configurer.init((B) this);
 //        }
+    }
+
+    private void configure() throws Exception {
+        Collection<SecurityConfigurer<O, B>> configurers = getConfigurers();
+
+        for (SecurityConfigurer<O, B> configurer : configurers) {
+            configurer.configure((B) this);
+        }
     }
 
     protected abstract O performBuild() throws Exception;
