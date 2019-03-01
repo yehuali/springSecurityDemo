@@ -14,10 +14,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 
 import java.util.Collection;
 
-public abstract class AbstractSecurityInterceptor {
+public abstract class AbstractSecurityInterceptor implements ApplicationEventPublisherAware {
 
     protected final Log logger = LogFactory.getLog(getClass());
 
@@ -30,6 +31,11 @@ public abstract class AbstractSecurityInterceptor {
     private boolean publishAuthorizationSuccess = false;
 
     public abstract SecurityMetadataSource obtainSecurityMetadataSource();
+
+    public void setApplicationEventPublisher(
+            ApplicationEventPublisher applicationEventPublisher) {
+        this.eventPublisher = applicationEventPublisher;
+    }
 
     public void setAuthenticationManager(AuthenticationManager newManager) {
         this.authenticationManager = newManager;

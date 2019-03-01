@@ -10,6 +10,7 @@ import com.example.core.util.matcher.AnyRequestMatcher;
 import com.example.core.util.matcher.RequestMatcher;
 import com.example.core.web.DefaultSecurityFilterChain;
 import com.example.core.web.HttpSecurityBuilder;
+import com.example.core.web.config.AnonymousConfigurer;
 import com.example.core.web.config.ExpressionUrlAuthorizationConfigurer;
 import com.example.core.web.config.SecurityContextConfigurer;
 import org.springframework.context.ApplicationContext;
@@ -87,7 +88,15 @@ public class HttpSecurity extends AbstractConfiguredSecurityBuilder<DefaultSecur
         return getOrApply(new SecurityContextConfigurer<HttpSecurity>());
     }
 
-
+    /**
+     * 允许配置如何表示匿名用户。这是自动与{@link WebSecurityConfigurerAdapter}一起使用时应用。
+     * 通过默认匿名用户将用AnonymousAuthenticationToken 并包含角色“ROLE_ANONYMOUS”
+     * @return
+     * @throws Exception
+     */
+    public AnonymousConfigurer<HttpSecurity> anonymous() throws Exception {
+        return getOrApply(new AnonymousConfigurer<HttpSecurity>());
+    }
 
     /**
      *  如果{@link SecurityConfigurer}已经被指定，否则获取新的{@link SecurityConfigurerAdapter}

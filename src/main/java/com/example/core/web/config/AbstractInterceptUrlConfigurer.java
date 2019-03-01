@@ -6,6 +6,7 @@ import com.example.core.web.access.AccessDecisionManager;
 import com.example.core.web.access.AccessDecisionVoter;
 import com.example.core.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import com.example.core.web.access.intercept.FilterSecurityInterceptor;
+import com.example.core.web.access.vote.AffirmativeBased;
 
 import java.util.List;
 
@@ -22,6 +23,8 @@ public abstract class AbstractInterceptUrlConfigurer<C extends AbstractIntercept
         }
         FilterSecurityInterceptor securityInterceptor = createFilterSecurityInterceptor(
                 http, metadataSource, http.getSharedObject(AuthenticationManager.class));
+
+        securityInterceptor = postProcess(securityInterceptor);
         http.addFilter(securityInterceptor);
         http.setSharedObject(FilterSecurityInterceptor.class, securityInterceptor);
     }
@@ -53,9 +56,8 @@ public abstract class AbstractInterceptUrlConfigurer<C extends AbstractIntercept
     }
 
     private AccessDecisionManager createDefaultAccessDecisionManager(H http) {
-//        AffirmativeBased result = new AffirmativeBased(getDecisionVoters(http));
-//        return postProcess(result);
-        return null;
+        AffirmativeBased result = new AffirmativeBased(getDecisionVoters(http));
+        return result;
     }
 
     abstract List<AccessDecisionVoter<? extends Object>> getDecisionVoters(H http);

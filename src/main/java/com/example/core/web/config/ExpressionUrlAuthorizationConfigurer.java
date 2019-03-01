@@ -9,9 +9,11 @@ import com.example.core.web.access.SecurityConfig;
 import com.example.core.web.access.expression.DefaultWebSecurityExpressionHandler;
 import com.example.core.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
 import com.example.core.web.access.expression.SecurityExpressionHandler;
+import com.example.core.web.access.expression.WebExpressionVoter;
 import com.example.core.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.context.ApplicationContext;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,6 +57,7 @@ public class ExpressionUrlAuthorizationConfigurer<H extends HttpSecurityBuilder<
 
 
 
+
     private SecurityExpressionHandler<FilterInvocation> getExpressionHandler(H http) {
         /**
          * expressionHandler 参考OAuth2WebSecurityExpressionHandler
@@ -69,12 +72,11 @@ public class ExpressionUrlAuthorizationConfigurer<H extends HttpSecurityBuilder<
 
     @Override
     List<AccessDecisionVoter<? extends Object>> getDecisionVoters(H http) {
-//        List<AccessDecisionVoter<? extends Object>> decisionVoters = new ArrayList<AccessDecisionVoter<? extends Object>>();
-//        WebExpressionVoter expressionVoter = new WebExpressionVoter();
-//        expressionVoter.setExpressionHandler(getExpressionHandler(http));
-//        decisionVoters.add(expressionVoter);
-//        return decisionVoters;
-        return null;
+        List<AccessDecisionVoter<? extends Object>> decisionVoters = new ArrayList<AccessDecisionVoter<? extends Object>>();
+        WebExpressionVoter expressionVoter = new WebExpressionVoter();
+        expressionVoter.setExpressionHandler(getExpressionHandler(http));
+        decisionVoters.add(expressionVoter);
+        return decisionVoters;
     }
 
     public class ExpressionInterceptUrlRegistry

@@ -70,7 +70,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
             http
                 .addFilter(new WebAsyncManagerIntegrationFilter())
                 .sessionManagement().and()
-                .securityContext()
+                .securityContext().and()
+                .anonymous()
                 ;
         }
         configure(http);
@@ -115,6 +116,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 //        sharedObjects.put(AuthenticationTrustResolver.class, trustResolver);
         return sharedObjects;
     }
+
+
 
     /**
      * 获取要使用的AuthenticationManager

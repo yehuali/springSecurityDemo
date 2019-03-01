@@ -46,6 +46,7 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
     }
 
     public <C extends SecurityConfigurerAdapter<O, B>> C apply(C configurer) throws Exception{
+        configurer.addObjectPostProcessor(objectPostProcessor);
         configurer.setBuilder((B) this);
         add(configurer);
         return configurer;

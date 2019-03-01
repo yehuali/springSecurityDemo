@@ -21,7 +21,7 @@ import java.util.Map;
  *
  * {@code /aaa/**}将匹配{@code /aaa}、{@code /aaa/}和任何子目录，例如{ @code / aaa / bbb / ccc }
  */
-public final class AntPathRequestMatcher implements RequestMatcher {
+public final class AntPathRequestMatcher implements RequestMatcher,RequestVariablesExtractor {
 
     private static final Log logger = LogFactory.getLog(AntPathRequestMatcher.class);
     private static final String MATCH_ALL = "/**";
@@ -111,6 +111,15 @@ public final class AntPathRequestMatcher implements RequestMatcher {
         }
 
         return null;
+    }
+
+    @Override
+    public Map<String, String> extractUriTemplateVariables(HttpServletRequest request) {
+        if (this.matcher == null || !matches(request)) {
+            return Collections.emptyMap();
+        }
+        String url = getRequestPath(request);
+        return this.matcher.extractUriTemplateVariables(url);
     }
 
 

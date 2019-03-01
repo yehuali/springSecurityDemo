@@ -25,4 +25,9 @@ public class SecurityConfig implements ConfigAttribute {
 
         return attributes;
     }
+
+    @Override
+    public String getAttribute() {
+        return attrib;
+    }
 }

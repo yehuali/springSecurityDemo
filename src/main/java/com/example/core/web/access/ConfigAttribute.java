@@ -11,4 +11,5 @@ import java.io.Serializable;
  * 与其他<code>ConfigAttribute</code>s为同一个安全对象存储在运行时目标
  */
 public interface ConfigAttribute extends Serializable {
+    String getAttribute();
 }
