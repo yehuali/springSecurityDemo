@@ -11,6 +11,7 @@ import com.example.core.util.matcher.RequestMatcher;
 import com.example.core.web.DefaultSecurityFilterChain;
 import com.example.core.web.HttpSecurityBuilder;
 import com.example.core.web.config.AnonymousConfigurer;
+import com.example.core.web.config.ExceptionHandlingConfigurer;
 import com.example.core.web.config.ExpressionUrlAuthorizationConfigurer;
 import com.example.core.web.config.SecurityContextConfigurer;
 import org.springframework.context.ApplicationContext;
@@ -55,6 +56,10 @@ public class HttpSecurity extends AbstractConfiguredSecurityBuilder<DefaultSecur
     public HttpSecurity requestMatcher(RequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;
         return this;
+    }
+
+    public ExceptionHandlingConfigurer<HttpSecurity> exceptionHandling() throws Exception {
+        return getOrApply(new ExceptionHandlingConfigurer<HttpSecurity>());
     }
 
     /**

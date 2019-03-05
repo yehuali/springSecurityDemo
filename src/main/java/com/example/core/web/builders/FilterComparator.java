@@ -1,5 +1,6 @@
 package com.example.core.web.builders;
 
+import com.example.core.web.access.ExceptionTranslationFilter;
 import com.example.core.web.access.intercept.FilterSecurityInterceptor;
 import com.example.core.web.authentication.AnonymousAuthenticationFilter;
 import com.example.core.web.context.SecurityContextPersistenceFilter;
@@ -26,6 +27,8 @@ final class FilterComparator implements Comparator<Filter>, Serializable {
         put(SecurityContextPersistenceFilter.class, order);
         order += STEP;
         put(AnonymousAuthenticationFilter.class, order);
+        order += STEP;
+        put(ExceptionTranslationFilter.class, order);
         order += STEP;
         put(FilterSecurityInterceptor.class, order);
     }

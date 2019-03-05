@@ -69,6 +69,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         if (!disableDefaults) {
             http
                 .addFilter(new WebAsyncManagerIntegrationFilter())
+                .exceptionHandling().and()
                 .sessionManagement().and()
                 .securityContext().and()
                 .anonymous()
@@ -116,7 +117,6 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 //        sharedObjects.put(AuthenticationTrustResolver.class, trustResolver);
         return sharedObjects;
     }
-
 
 
     /**
